@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🍅 부여 토마토 농가 공유 콜리스트</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #dc2626;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    /* Top Bar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+    }
+    .topbar-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .title-wrap h1 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+    .live-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #15803d;
+      background: #dcfce7;
+      padding: 2px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #16a34a;
+    }
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .name-input {
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      width: 110px;
+      font-weight: 600;
+    }
+    .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      text-decoration: none;
+      transition: 0.12s;
+      white-space: nowrap;
+    }
+    .btn:hover { background: #f1f5f9; }
+    .btn-primary { background: #0f172a; color: #fff; border-color: #0f172a; }
+    .btn-primary:hover { background: #1e293b; }
+    .btn-red { background: #dc2626; color: #fff; border-color: #dc2626; }
+    .btn-red:hover { background: #b91c1c; }
+
+    .wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 16px 40px;
+    }
+
+    /* Summary Strip */
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .sum-pill {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 7px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sum-pill strong { font-size: 0.96rem; color: var(--text); }
+
+    /* Script Accordion */
+    .script-card {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .script-head {
+      padding: 9px 14px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #92400e;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .script-content {
+      display: none;
+      padding: 0 14px 12px;
+      font-size: 0.84rem;
+      color: #451a03;
+      border-top: 1px solid #fde68a;
+    }
+    .script-content.open { display: block; }
+    .script-content ol { margin: 6px 0; padding-left: 18px; }
+    .script-content li { margin-bottom: 4px; }
+    .quote {
+      background: #fff;
+      border-left: 3px solid #f59e0b;
+      padding: 7px 10px;
+      border-radius: 6px;
+      margin: 8px 0;
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .chip {
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 5px 11px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .chip.active {
+      background: #0f172a;
+      color: #fff;
+      border-color: #0f172a;
+    }
+    .filter-right {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .filter-right select, .filter-right input {
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      background: #fff;
+    }
+
+    /* List Rows (T4 Call-list Style) */
+    .list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .row {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      transition: border-color 0.15s;
+    }
+    .row.st-통화중 { border-left: 4px solid #2563eb; background: #eff6ff; }
+    .row.st-통화함 { border-left: 4px solid #16a34a; background: #f0fdf4; }
+    .row.st-인터뷰\ 약속 { border-left: 4px solid #7c3aed; background: #f5f3ff; }
+    .row.st-설문\ 보냄 { border-left: 4px solid #0284c7; background: #f0f9ff; }
+    .row.st-부재 { border-left: 4px solid #d97706; }
+    .row.st-거절 { border-left: 4px solid #94a3b8; opacity: 0.72; }
+
+    .row-main {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .row-info {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .cat-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      color: #475569;
+    }
+    .cat-tag.buyeo { background: #fee2e2; color: #991b1b; }
+    .cat-tag.org { background: #e0e7ff; color: #3730a3; }
+    .farm-title {
+      font-weight: 800;
+      font-size: 0.96rem;
+    }
+    .farm-region {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .farm-note {
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    .row-phone-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .phone-link {
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #0f172a;
+      background: #f1f5f9;
+      padding: 5px 10px;
+      border-radius: 8px;
+      text-decoration: none;
+      border: 1px solid var(--border);
+    }
+    .phone-link:hover { background: #dcfce7; border-color: #86efac; color: #166534; }
+
+    /* Status Pill Buttons (Inline 1-click like T4) */
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 5px;
+    }
+    .st-btn {
+      border: 1px solid #cbd5e1;
+      background: #fff;
+      color: #475569;
+      border-radius: 7px;
+      padding: 4px 9px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.1s;
+    }
+    .st-btn:hover { background: #f8fafc; }
+    .st-btn.active.s-통화중 { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .st-btn.active.s-부재 { background: #d97706; color: #fff; border-color: #d97706; }
+    .st-btn.active.s-통화함 { background: #16a34a; color: #fff; border-color: #16a34a; }
+    .st-btn.active.s-인터뷰약속 { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+    .st-btn.active.s-설문보냄 { background: #0284c7; color: #fff; border-color: #0284c7; }
+    .st-btn.active.s-거절 { background: #64748b; color: #fff; border-color: #64748b; }
+
+    .who-tag {
+      font-size: 0.76rem;
+      color: #475569;
+      margin-left: auto;
+    }
+
+    /* Inline Memo + Survey Summary */
+    .row-bottom {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .memo-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 6px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.82rem;
+      background: rgba(255,255,255,0.85);
+    }
+    .memo-input:focus { outline: 2px solid #93c5fd; border-color: #3b82f6; background: #fff; }
+    .survey-chip {
+      font-size: 0.76rem;
+      background: #fef2f2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    /* Modal */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.5);
+      z-index: 60;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+    }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: #fff;
+      width: 100%;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 14px;
+      padding: 18px;
+    }
+    .modal h2 { margin: 0 0 12px; font-size: 1.05rem; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .fg { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+    .fg.full { grid-column: 1 / -1; }
+    .fg label { font-size: 0.76rem; font-weight: 700; color: #334155; }
+    .fg input, .fg select, .fg textarea {
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.86rem;
+      font-family: inherit;
+    }
+    .modal-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: none;
+      z-index: 100;
+    }
+    @media (max-width: 600px) {
+      .grid2 { grid-template-columns: 1fr; }
+      .who-tag { margin-left: 0; width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="title-wrap">
+        <h1>🍅 부여 토마토 농가 콜리스트</h1>
+        <span class="live-badge"><span class="live-dot"></span>실시간 공유</span>
+      </div>
+      <div class="top-actions">
+        <input id="memberName" class="name-input" type="text" placeholder="내 이름(예: 태윤)" />
+        <button class="btn btn-red" onclick="openAddModal()">+ 농가 추가</button>
+        <button class="btn" onclick="exportCSV()">📥 CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <!-- Summary -->
+    <div class="summary" id="summaryBar"></div>
+
+    <!-- Script -->
+    <div class="script-card">
+      <div class="script-head" onclick="toggleScript()">
+        <span>📋 통화 대본 & 3분 설문 질문지 (클릭해서 펼치기)</span>
+        <span id="scriptArrow">▼</span>
+      </div>
+      <div class="script-content" id="scriptContent">
+        <div class="quote">
+          <strong>[오프닝]</strong> "안녕하세요 사장님! 영업 전화는 아니고, 지금 <strong>부여 솔버톤(지역 문제 해결 프로젝트)</strong>에 참가 중인 팀입니다. 토마토 비닐하우스 난방비 절감 방안을 만들고 있는데, <strong>딱 3분만</strong> 여쭤봐도 괜찮을까요?"
+        </div>
+        <ol>
+          <li><strong>하우스·규모:</strong> 단동/연동, 토경/양액 중 어떤 방식이고 규모(동 수/평수, 예: 1필지 1,200평 4~5동)는요?</li>
+          <li><strong>구체적 난방비:</strong> 한겨울(12~2월) 기준 <strong>한 달 난방비(기름·전기 등)</strong>가 대략 얼마 정도 지출되시나요?</li>
+          <li><strong>설비 & 지원사업:</strong> 난방 방식(면세유 보일러/전기/히트펌프 등)과 <strong>군청·기술센터 난방 지원사업</strong> 경험·체감 효과는요?</li>
+          <li><strong>애로사항:</strong> 최근 <strong>갈색주름병</strong>이나 겨울철 온습도·야간 냉해 관리에서 가장 힘든 점은요?</li>
+          <li><strong>시범사업 의향:</strong> 내년 1월 <strong>기술센터 시범사업</strong>으로 IoT 난방비·온습도 모니터링/최적화가 나온다면 참여 의향이 있으신가요?</li>
+        </ol>
+        <div class="quote">
+          <strong>[클로징]</strong> "귀한 시간 감사합니다! 혹시 근처에 3분 정도 여쭤볼 만한 다른 토마토 하우스 사장님 한 분만 소개해 주실 수 있을까요?"
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="chip-group" id="regionChips">
+        <button class="chip active" data-region="전체">전체</button>
+        <button class="chip" data-region="부여 농가">🍅 부여 농가</button>
+        <button class="chip" data-region="부여 세도면">세도면</button>
+        <button class="chip" data-region="부여 기관·농협">🏛️ 부여 기관·농협</button>
+        <button class="chip" data-region="전국 농가">🗺️ 전국 농가</button>
+      </div>
+      <div class="filter-right">
+        <select id="statusFilter" onchange="render()">
+          <option value="전체">상태: 전체</option>
+          <option value="미연락">미연락만</option>
+          <option value="통화중">통화중</option>
+          <option value="부재">부재</option>
+          <option value="통화함">통화함</option>
+          <option value="인터뷰 약속">인터뷰 약속</option>
+          <option value="설문 보냄">설문 보냄</option>
+          <option value="거절">거절</option>
+        </select>
+        <input id="searchInput" type="text" placeholder="농장명·지역·번호·메모 검색" oninput="render()" />
+      </div>
+    </div>
+
+    <!-- Call List -->
+    <div class="list" id="listContainer"></div>
+  </div>
+
+  <!-- Detailed Survey Modal -->
+  <div class="modal-bg" id="surveyModal">
+    <div class="modal">
+      <h2 id="surveyModalTitle">상세 설문 기록</h2>
+      <input type="hidden" id="sId" />
+      <div class="grid2">
+        <div class="fg">
+          <label>하우스 형태</label>
+          <select id="sHouseType">
+            <option value="">선택</option>
+            <option value="단동">단동</option>
+            <option value="연동">연동</option>
+            <option value="혼합">단동+연동</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>재배 방식</label>
+          <select id="sCultivation">
+            <option value="">선택</option>
+            <option value="토경">토경재배</option>
+            <option value="양액">양액재배(리프팅)</option>
+            <option value="혼합">혼합</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>규모 (동 수 / 평수)</label>
+          <input id="sScale" type="text" placeholder="예: 5동 / 1,200평" />
+        </div>
+        <div class="fg">
+          <label>겨울 월 난방비 (만원, 숫자)</label>
+          <input id="sMonthlyCost" type="number" placeholder="예: 350" />
+        </div>
+        <div class="fg">
+          <label>난방 방식</label>
+          <input id="sHeatingMethod" type="text" placeholder="예: 면세유 보일러, 히트펌프" />
+        </div>
+        <div class="fg">
+          <label>기존 지원사업 수혜</label>
+          <select id="sSubsidyExp">
+            <option value="">선택</option>
+            <option value="있음">있음</option>
+            <option value="없음">없음</option>
+          </select>
+        </div>
+        <div class="fg full">
+          <label>IoT 시범사업 참여 의향</label>
+          <select id="sPilotInterest">
+            <option value="">선택</option>
+            <option value="있음">있음</option>
+            <option value="보통">조건 보고 결정</option>
+            <option value="없음">없음</option>
+          </select>
+        </div>
+        <div class="fg full">
+          <label>애로사항 / 갈색주름병 / 기타 답변</label>
+          <textarea id="sPainPoints" rows="3" placeholder="통화 중 나온 핵심 답변 기록"></textarea>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('surveyModal')">취소</button>
+        <button class="btn btn-primary" onclick="saveSurvey()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Contact Modal -->
+  <div class="modal-bg" id="addModal">
+    <div class="modal">
+      <h2>+ 신규 농가 / 기관 추가</h2>
+      <div class="grid2">
+        <div class="fg">
+          <label>분류</label>
+          <select id="aCat">
+            <option value="부여 농가">부여 농가</option>
+            <option value="부여 기관·농협">부여 기관·농협</option>
+            <option value="전국 농가">전국 농가</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>지역</label>
+          <input id="aRegion" type="text" value="부여군 " placeholder="예: 부여군 세도면" />
+        </div>
+        <div class="fg">
+          <label>농장명 / 기관명 *</label>
+          <input id="aName" type="text" placeholder="예: 행복토마토농장" />
+        </div>
+        <div class="fg">
+          <label>전화번호 *</label>
+          <input id="aPhone" type="text" placeholder="010-0000-0000" />
+        </div>
+        <div class="fg full">
+          <label>비고</label>
+          <input id="aNote" type="text" placeholder="예: 신선농장 사장님 소개" />
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn" onclick="closeModal('addModal')">취소</button>
+        <button class="btn btn-red" onclick="saveNewContact()">추가</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API_BASE = location.hostname.endsWith('github.io')
+      ? 'https://needs-centered-cleared-mins.trycloudflare.com'
+      : '';
+    const STATUSES = ['통화중', '부재', '통화함', '인터뷰 약속', '설문 보냄', '거절'];
+    let contacts = [];
+    let currentFilter = '전체';
+    let isTypingMemo = false;
+
+    const memberEl = document.getElementById('memberName');
+    memberEl.value = localStorage.getItem('buyeo_caller_name') || '';
+    memberEl.addEventListener('input', () => {
+      localStorage.setItem('buyeo_caller_name', memberEl.value.trim());
+    });
+    const getCaller = () => memberEl.value.trim() || '팀원';
+
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.style.display = 'block';
+      clearTimeout(window._tt);
+      window._tt = setTimeout(() => { el.style.display = 'none'; }, 2000);
+    }
+
+    function toggleScript() {
+      const c = document.getElementById('scriptContent');
+      const a = document.getElementById('scriptArrow');
+      a.textContent = c.classList.toggle('open') ? '▲' : '▼';
+    }
+
+    document.querySelectorAll('#regionChips .chip').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#regionChips .chip').forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.region;
+        render();
+      });
+    });
+
+    async function loadContacts() {
+      try {
+        const res = await fetch(`${API_BASE}/api/contacts`);
+        const data = await res.json();
+        contacts = (data.contacts || []).map((c) => ({
+          ...c,
+          status: c.status === '미통화' ? '미연락' : c.status === '부재중' ? '부재' : c.status === '설문완료' ? '통화함' : (c.status || '미연락'),
+        }));
+        render();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, (m) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]));
+    }
+
+    function render() {
+      // Summary bar
+      const counts = { 전체: contacts.length, 통화함: 0, '인터뷰 약속': 0, '설문 보냄': 0, 통화중: 0, 부재: 0, 거절: 0 };
+      const costs = [];
+      contacts.forEach((c) => {
+        if (counts[c.status] !== undefined) counts[c.status]++;
+        const n = Number(c.survey?.monthlyCost);
+        if (!isNaN(n) && n > 0) costs.push(n);
+      });
+      const avgCost = costs.length ? Math.round(costs.reduce((a, b) => a + b, 0) / costs.length) + '만원' : '-';
+
+      document.getElementById('summaryBar').innerHTML = `
+        <div class="sum-pill">전체 <strong>${counts.전체}</strong></div>
+        <div class="sum-pill">통화함 <strong style="color:#16a34a">${counts.통화함}</strong></div>
+        <div class="sum-pill">인터뷰 약속 <strong style="color:#7c3aed">${counts['인터뷰 약속']}</strong></div>
+        <div class="sum-pill">설문 보냄 <strong style="color:#0284c7">${counts['설문 보냄']}</strong></div>
+        <div class="sum-pill">통화중 <strong style="color:#2563eb">${counts.통화중}</strong></div>
+        <div class="sum-pill">부재 <strong style="color:#d97706">${counts.부재}</strong></div>
+        <div class="sum-pill">평균 월 난방비 <strong style="color:#dc2626">${avgCost}</strong></div>
+      `;
+
+      const sf = document.getElementById('statusFilter').value;
+      const q = document.getElementById('searchInput').value.trim().toLowerCase();
+
+      const filtered = contacts.filter((c) => {
+        if (currentFilter === '부여 세도면') {
+          if (!c.region.includes('세도')) return false;
+        } else if (currentFilter !== '전체') {
+          if (c.category !== currentFilter) return false;
+        }
+        if (sf !== '전체' && c.status !== sf) return false;
+        if (q) {
+          const hay = `${c.name} ${c.region} ${c.phone} ${c.note} ${c.memo || ''} ${c.caller || ''}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
+
+      const list = document.getElementById('listContainer');
+      if (!filtered.length) {
+        list.innerHTML = '<div style="text-align:center;padding:30px;color:#64748b;">해당 조건의 농가가 없습니다.</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map((c) => {
+        const catCls = c.category === '부여 농가' ? 'buyeo' : c.category === '부여 기관·농협' ? 'org' : '';
+        const s = c.survey || {};
+        const surveyBits = [];
+        if (s.houseType || s.cultivation) surveyBits.push(`${s.houseType || '-'}·${s.cultivation || '-'}`);
+        if (s.scale) surveyBits.push(s.scale);
+        if (s.monthlyCost) surveyBits.push(`월 ${s.monthlyCost}만원`);
+        if (s.pilotInterest) surveyBits.push(`시범:${s.pilotInterest}`);
+
+        const statusBtns = STATUSES.map((st) => {
+          const active = c.status === st ? 'active' : '';
+          const stClass = 's-' + st.replace(/\s+/g, '');
+          return `<button class="st-btn ${active} ${stClass}" onclick="toggleStatus('${c.id}', '${st}')">${st}</button>`;
+        }).join('');
+
+        return `
+          <div class="row st-${esc(c.status)}">
+            <div class="row-main">
+              <div class="row-info">
+                <span class="cat-tag ${catCls}">${esc(c.category)}</span>
+                <span class="farm-title">${esc(c.name)}</span>
+                <span class="farm-region">${esc(c.region)}</span>
+                <span class="farm-note">${esc(c.note)}</span>
+              </div>
+              <div class="row-phone-actions">
+                <a class="phone-link" href="tel:${c.phone.replace(/[^0-9]/g, '')}" onclick="markCalling('${c.id}')">📞 ${esc(c.phone)}</a>
+                <button class="btn" onclick="copySms('${c.id}')">📩 설문 문자 복사</button>
+                <button class="btn" onclick="openSurveyModal('${c.id}')">📝 상세 설문</button>
+              </div>
+            </div>
+
+            <div class="status-bar">
+              ${statusBtns}
+              <span class="who-tag">${c.caller ? `by <strong>${esc(c.caller)}</strong> ${c.updatedAt ? `(${c.updatedAt})` : ''}` : ''}</span>
+            </div>
+
+            <div class="row-bottom">
+              <input
+                class="memo-input"
+                type="text"
+                placeholder="한 줄 메모 입력 후 Enter 또는 바깥 클릭 시 자동 저장..."
+                value="${esc(c.memo || '')}"
+                onfocus="isTypingMemo=true"
+                onblur="saveMemo('${c.id}', this.value); isTypingMemo=false;"
+                onkeydown="if(event.key==='Enter'){this.blur();}"
+              />
+              ${surveyBits.length ? `<span class="survey-chip">${esc(surveyBits.join(' / '))}</span>` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function toggleStatus(id, targetStatus) {
+      const c = contacts.find((x) => x.id === id);
+      if (!c) return;
+      const nextStatus = c.status === targetStatus ? '미연락' : targetStatus;
+      const caller = nextStatus === '미연락' ? '' : getCaller();
+      await fetch(`${API_BASE}/api/contacts/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: nextStatus, caller }),
+      });
+      toast(nextStatus === '미연락' ? '상태를 해제했습니다.' : `'${nextStatus}' 체크 완료 (by ${caller})`);
+      loadContacts();
+    }
+
+    async function markCalling(id) {
+      const caller = getCaller();
+      await fetch(`${API_BASE}/api/contacts/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: '통화중', caller }),
+      });
+      toast(`통화중 표시 (by ${caller})`);
+      loadContacts();
+    }
+
+    async function saveMemo(id, val) {
+      const c = contacts.find((x) => x.id === id);
+      if (!c || (c.memo || '') === val.trim()) return;
+      await fetch(`${API_BASE}/api/contacts/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ memo: val.trim(), caller: c.caller || getCaller() }),
+      });
+      toast('메모 저장됨');
+      loadContacts();
+    }
+
+    async function copySms(id) {
+      const c = contacts.find((x) => x.id === id);
+      if (!c) return;
+      const text = `안녕하세요, ${c.name} 사장님! 영업 문자는 아니며 부여 솔버톤(지역 농업 문제 해결 프로젝트)에 참가 중인 팀입니다.\n\n토마토 비닐하우스 겨울철 난방비 절감 및 기술센터 시범사업 제안을 위해 간단한 현장 의견을 여쭙고자 연락드렸습니다.\n\n혹시 편하신 시간에 1) 단동/연동 및 규모 2) 겨울철 월 난방비 대략 금액 3) 난방 관리 시 가장 힘든 점만 짧게 답장 주시면 큰 도움이 되겠습니다. 바쁘신 중에 감사드립니다! (수신을 원치 않으시면 답장 주지 않으셔도 됩니다.)`;
+      try {
+        await navigator.clipboard.writeText(text);
+        toast(`'${c.name}' 맞춤 설문 문자 복사 완료!`);
+      } catch (e) {
+        prompt('아래 문구를 복사해 주세요:', text);
+      }
+    }
+
+    function openSurveyModal(id) {
+      const c = contacts.find((x) => x.id === id);
+      if (!c) return;
+      const s = c.survey || {};
+      document.getElementById('sId').value = c.id;
+      document.getElementById('surveyModalTitle').textContent = `📝 ${c.name} 상세 설문 기록`;
+      document.getElementById('sHouseType').value = s.houseType || '';
+      document.getElementById('sCultivation').value = s.cultivation || '';
+      document.getElementById('sScale').value = s.scale || '';
+      document.getElementById('sMonthlyCost').value = s.monthlyCost || '';
+      document.getElementById('sHeatingMethod').value = s.heatingMethod || '';
+      document.getElementById('sSubsidyExp').value = s.subsidyExp || '';
+      document.getElementById('sPilotInterest').value = s.pilotInterest || '';
+      document.getElementById('sPainPoints').value = s.painPoints || '';
+      document.getElementById('surveyModal').classList.add('open');
+    }
+
+    async function saveSurvey() {
+      const id = document.getElementById('sId').value;
+      const c = contacts.find((x) => x.id === id);
+      await fetch(`${API_BASE}/api/contacts/${encodeURIComponent(id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: c && c.status === '미연락' ? '통화함' : undefined,
+          caller: getCaller(),
+          survey: {
+            houseType: document.getElementById('sHouseType').value,
+            cultivation: document.getElementById('sCultivation').value,
+            scale: document.getElementById('sScale').value.trim(),
+            monthlyCost: document.getElementById('sMonthlyCost').value.trim(),
+            heatingMethod: document.getElementById('sHeatingMethod').value.trim(),
+            subsidyExp: document.getElementById('sSubsidyExp').value,
+            pilotInterest: document.getElementById('sPilotInterest').value,
+            painPoints: document.getElementById('sPainPoints').value.trim(),
+          },
+        }),
+      });
+      closeModal('surveyModal');
+      toast('상세 설문 저장 완료!');
+      loadContacts();
+    }
+
+    function openAddModal() {
+      document.getElementById('aName').value = '';
+      document.getElementById('aPhone').value = '';
+      document.getElementById('aNote').value = '';
+      document.getElementById('addModal').classList.add('open');
+    }
+
+    async function saveNewContact() {
+      const name = document.getElementById('aName').value.trim();
+      const phone = document.getElementById('aPhone').value.trim();
+      if (!name || !phone) return alert('농장명과 전화번호는 필수입니다.');
+      await fetch(`${API_BASE}/api/contacts`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          category: document.getElementById('aCat').value,
+          region: document.getElementById('aRegion').value.trim(),
+          name,
+          phone,
+          note: document.getElementById('aNote').value.trim(),
+          caller: getCaller(),
+        }),
+      });
+      closeModal('addModal');
+      toast('신규 농가 추가 완료!');
+      loadContacts();
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('open');
+    }
+
+    function exportCSV() {
+      const headers = ['분류', '지역', '농장명', '전화번호', '상태', '담당자', '한줄메모', '하우스형태', '재배방식', '규모', '월난방비(만원)', '난방방식', '기존지원사업', '시범사업의향', '애로사항'];
+      const rows = contacts.map((c) => {
+        const s = c.survey || {};
+        return [
+          c.category, c.region, c.name, c.phone, c.status, c.caller, c.memo,
+          s.houseType, s.cultivation, s.scale, s.monthlyCost, s.heatingMethod,
+          s.subsidyExp, s.pilotInterest, s.painPoints,
+        ].map((v) => `"${String(v || '').replace(/"/g, '""')}"`).join(',');
+      });
+      const csv = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+      a.download = `부여_토마토_콜리스트_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    }
+
+    loadContacts();
+    setInterval(() => {
+      const modalOpen = document.querySelector('.modal-bg.open');
+      if (!modalOpen && !isTypingMemo) loadContacts();
+    }, 3000);
+  </script>
+</body>
+</html>
